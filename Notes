@@ -1,0 +1,115 @@
+# Install celery
+pip install celery
+# Install RabbitMQ (Ubuntu Linux 20.04LTS)
+sudo apt-get install rabbitmq-server
+
+sudo systemctl enable rabbitmq-server
+sudo systemctl start rabbitmq-server
+
+systemctl status rabbitmq-server
+
+sudo rabbitmqctl stop
+
+# Run Celery
+celery -A NAMEOFINSTANCE worker --loglevel=info
+we used
+celery -A proj worker --loglevel=info
+
+#Run Task
+py manage.py shell
+from app1.tasks import add
+add.delay(3,4)
+add.apply_async((3,4), countdown=5)
+add.apply(2,2)
+
+
+
+
+pip install flower
+celery -A proj flower --loglevel=info
+http://localhost:5555/tasks
+
+
+
+pip install django-celery-beat
+
+celery -A proj beat -l INFO
+http://localhost:5555/dashboard
+
+
+pip install django-celery-results
+
+
+python manage.py createcachetable --dry-run
+python manage.py createcachetable
+
+
+
+Command Reference
+################
+
+# Install celery
+    pip install celery
+
+#Install RabbitMQ (Ubuntu Linux 20.04LTS)
+    sudo apt-get install rabbitmq-server
+
+# Run Celery
+    celery -A NAMEOFINSTANCE worker --loglevel=info
+
+    celery -A core worker --loglevel=info
+
+    [Windows OS]
+    celery -A core worker -l info --pool=solo
+
+# Run RabbitMQ (On Windows)
+
+Run:
+C:\Program Files\RabbitMQ Server\rabbitmq_server-3.8.6\sbin\rabbitmq-server.bat
+
+#Run First Task
+    py manage.py shell
+    from task1.tasks import add
+    add.delay(2, 2)
+
+    or
+
+    add.apply_async((2, 2), countdown=5)
+
+#Useful commands
+    #Show message on completion of task
+        logger.info("Sent review email")
+
+
+
+###############################
+Working with Flower
+===============================
+
+Windows Work Around
+#####
+C:\django\yt-django-celery-series-intro-install-run-task\venv\lib\site-packages\tornado\platform\asyncio.py
+
+import sys
+
+if sys.platform == 'win32':
+    asyncio.set_event_loop_policy(asyncio.WindowsSelectorEventLoopPolicy())
+
+Start Flower
+#####
+flower -A core --port=5555
+
+
+###############################
+django-celery-beat
+===============================
+
+celery -A core beat -l INFO  # For deeper logs use DEBUG
+celery -A core worker -B -l INFO
+
+You can also embed beat inside the worker by enabling the workers -B option
+
+
+Database scheduler
+celery -A core beat -l INFO --scheduler django_celery_beat.schedulers:DatabaseScheduler
+###############################
